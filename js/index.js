@@ -3,7 +3,6 @@ var id = 1;
 
 var createEmployee = function () {
   if (!validate()) return;
-  console.log(123);
   var form = document.getElementById("my-form");
   var accountName = document.getElementById("tknv").value;
   var name = document.getElementById("name").value;
@@ -196,11 +195,25 @@ var searchEmployee = function () {
 };
 
 var validate = function () {
-  var accountName = document.getElementById("tknv").value;
   var isValid = true;
+  var accountName = document.getElementById("tknv").value;
+  var name = document.getElementById("name").value;
+  var email = document.getElementById("email").value;
+  var password = document.getElementById("password").value;
+  var startDate = document.getElementById("datepicker").value;
+  var basicSalary = +document.getElementById("luongCB").value;
+  var workHours = document.getElementById("gioLam").value;
 
-  isValid &=
-    require(accountName, "tbTKNV") && checkLength(accountName, "tbTKNV", 4, 6);
+
+  isValid &= require(accountName, "tbTKNV") && checkLength(accountName, "tbTKNV", 4, 6);
+  isValid &= require(name, "tbTen") && checkName(name, "tbTen");
+  isValid &= require(email, "tbEmail") && checkEmail(email, "tbEmail");
+  isValid &= require(password, "tbMatKhau") && checkPassword(password, "tbMatKhau");
+  isValid &= require(startDate, "tbNgay");
+  isValid &= require(basicSalary, "tbLuongCB") && checkSalary(basicSalary, "tbLuongCB");
+  isValid &= require(workHours, "tbGiolam") && checkWorkHours(workHours, "tbGiolam");
+
+  return isValid;
 };
 
 var require = function (val, spanID, message) {
@@ -229,3 +242,69 @@ var changeTitle = function () {
   document.getElementById("btnThemNV").style.display = "inline-block";
   document.getElementById("btnCapNhat").style.display = "none";
 };
+
+function removeAscent(str) {
+  if (str === null || str === undefined) return str;
+  str = str.toLowerCase();
+  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+  str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+  str = str.replace(/đ/g, "d");
+  return str;
+}
+
+function checkName(string, spanID) {
+  var re = /^[a-zA-Z !@#\$%\^\&*\)\(+=._-]{2,}$/g; // regex here
+  if (!re.test(removeAscent(string))) {
+    document.getElementById(spanID).style.display = "inline-block";
+    document.getElementById(spanID).innerHTML = `The name is not valid!`;
+    return false;
+  }
+  document.getElementById(spanID).innerHTML = "";
+  return true;
+}
+
+function checkEmail(email, spanID) {
+  var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  if (!re.test(email)) {
+    document.getElementById(spanID).style.display = "inline-block";
+    document.getElementById(spanID).innerHTML = `The email is not valid!`;
+    return false;
+  }
+  document.getElementById(spanID).innerHTML = "";
+  return true;
+}
+
+function checkPassword(password, spanID) {
+  var re =  /^(?=.*\d)(?=.*[!@#$%^&* ])(?=.*[a-z])(?=.*[A-Z]).{6,10}$/;
+  if (!re.test(password)) {
+    document.getElementById(spanID).style.display = "inline-block";
+    document.getElementById(spanID).innerHTML = `The password must have 6 to 10 letter password, with at least a symbol, upper and lower case letters and a number!`;
+    return false;
+  }
+  document.getElementById(spanID).innerHTML = "";
+  return true;
+}
+
+function checkSalary(salary, spanID) {
+  if(salary < 1000000 && salary > 2000000) {
+    document.getElementById(spanID).style.display = "inline-block";
+    document.getElementById(spanID).innerHTML = `The salary must be from 1.000.000 VNĐ to 20.000.000 VNĐ!`;
+    return false;
+  } 
+  document.getElementById(spanID).innerHTML = "";
+  return true;
+}
+
+function checkWorkHours(workHours, spanID) {
+  if(workHours < 80 && workHours > 200) {
+    document.getElementById(spanID).style.display = "inline-block";
+    document.getElementById(spanID).innerHTML = `The work hours must be from 80 VNĐ to 200 VNĐ!`;
+    return false;
+  } 
+  document.getElementById(spanID).innerHTML = "";
+  return true;
+}
